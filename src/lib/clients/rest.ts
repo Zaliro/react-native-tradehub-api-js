@@ -1,14 +1,15 @@
 import { BigNumber } from 'bignumber.js'
-import { ethers } from 'ethers'
+// import { ethers } from 'ethers'
 import fetch from '../utils/fetch'
-import { wallet as neonWallet, u as neonUtils } from "@cityofzion/neon-js"
+// import { wallet as neonWallet, u as neonUtils } from "@cityofzion/neon-js"
 import dayjs from 'dayjs'
 
 import { getNetwork, NETWORK as NET } from '../config'
-import { GasFees, WalletClient } from './wallet'
-import { Blockchain } from '../constants'
+// import { Blockchain } from '../constants'
 
 import * as types from '../types'
+
+// import { GasFees, WalletClient } from './wallet.ts'
 
 export enum Direction {
   long = 'long',
@@ -88,7 +89,7 @@ export interface REST {
   getRewardCurve(): Promise<any>
   getLastClaimedPoolReward(params: types.PoolIDAndAddressGetter): Promise<any>
   getRewardHistory(params: types.PoolIDAndBlockHeightGetter): Promise<any>
-  getGasFees() : Promise<GasFees>
+  // getGasFees() : Promise<GasFees>
   getRewardsDistributed(): Promise<types.RewardsDistributedResponse>
 
   // cosmos
@@ -105,9 +106,10 @@ export interface REST {
   getDistributionParams(): Promise<any>
 
   // private admin
-  setTradingFlag(msg: types.SetTradingFlagMsg, options?: types.Options): Promise<any>
+  // setTradingFlag(msg: types.SetTradingFlagMsg, options?: types.Options): Promise<any>
 
   // private
+  /*
   send(msg: types.SendTokensMsg, options?: types.Options): Promise<any>
   createOrder(msg: types.CreateOrderMsg, options?: types.Options): Promise<any>
   createOrders(msgs: types.CreateOrderMsg[], options?: types.Options): Promise<any>
@@ -165,18 +167,27 @@ export interface REST {
   getRewardHistory(params: types.PoolIDAndBlockHeightGetter): Promise<any>
   getGasFees() : Promise<GasFees>
   getAccountRealizedPnl(params: types.GetIndividualPnlParams): Promise<types.GetIndivPnlResponse>
+  */
 }
 
 export class RestClient implements REST {
   public readonly baseUrl: string
   public readonly cosmosBaseUrl: string
-  public readonly wallet: WalletClient
+  // public readonly wallet: WalletClient
 
+  /*
   constructor(options: { network: string, wallet?: WalletClient }) {
     const { network, wallet } = options
     this.baseUrl = getNetwork(network).REST_URL
     this.cosmosBaseUrl = getNetwork(network).COSMOS_URL
     this.wallet = wallet
+  }
+  */
+
+  constructor(options: { network: string }) {
+    const { network } = options
+    this.baseUrl = getNetwork(network).REST_URL
+    this.cosmosBaseUrl = getNetwork(network).COSMOS_URL
   }
 
   protected async fetchJson(relativeUrl: string): Promise<any> {
@@ -193,12 +204,14 @@ export class RestClient implements REST {
     return json
   }
 
+  /*
   private getFee(msgType: string): string {
     if (msgType in types.FEE_TYPES) {
       return this.wallet.fees[types.FEE_TYPES[msgType]]
     }
     return this.wallet.fees[types.FEE_TYPES.Default]
   }
+  */
 
   //
   // PUBLIC METHODS
@@ -208,6 +221,7 @@ export class RestClient implements REST {
 
   public async getAccount(params?: types.AddressOnlyGetterParams) {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -216,6 +230,8 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_account?account=${address}`)
   }
 
@@ -226,6 +242,7 @@ export class RestClient implements REST {
 
   public async getProfile(params?: types.AddressOnlyGetterParams) {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -234,24 +251,30 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_profile?account=${address}`)
   }
 
   public async getPosition(params: types.MarketAndAddressGetterParams) {
-    if (!params.address && !this.wallet) {
-      throw new Error('get_account: missing address param')
+    if (!params.address) { // && !this.wallet
+      throw new Error('get_position: missing address param')
     }
     let address = ''
+    /*
     if (!params.address) {
       address = this.wallet.pubKeyBech32
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_position?account=${address}&market=${params.market}`)
   }
 
   public async getPositions(params?: types.AddressOnlyGetterParams) {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -260,19 +283,24 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_position?account=${address}`)
   }
 
   public async getLeverage(params: types.MarketAndAddressGetterParams) {
-    if (!params.address && !this.wallet) {
+    if (!params.address) { // && !this.wallet
       throw new Error('get_account: missing address param')
     }
     let address = ''
+    /*
     if (!params.address) {
       address = this.wallet.pubKeyBech32
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_leverage?account=${address}&market=${params.market}`)
   }
 
@@ -294,6 +322,7 @@ export class RestClient implements REST {
 
     let url = '/get_orders?'
 
+    /*
     if (!account) {
       if (!this.wallet) {
         url += `account=${this.wallet.pubKeyBech32}&`
@@ -301,6 +330,8 @@ export class RestClient implements REST {
     } else {
       url += `account=${account}&`
     }
+    */
+    url += `account=${account}&`
 
     if (market) {
       url += `market=${market}&`
@@ -335,11 +366,14 @@ export class RestClient implements REST {
 
     let url = '/get_orders?'
 
+    /*
     if (account) {
       url += `account=${account}&`
     } else {
       url += `account=${this.wallet.pubKeyBech32}&`
     }
+    */
+    url += `account=${account}&`
 
     url += `order_status=open&`
 
@@ -372,14 +406,17 @@ export class RestClient implements REST {
 
     let url = '/get_trades_by_account?'
 
-    if (!address && !this.wallet) {
+    if (!address) { // && !this.wallet
       throw new Error('get_account: missing address param')
     }
+    /*
     if (!address) {
       url += `account=${this.wallet.pubKeyBech32}&`
     } else {
       url += `account=${address}&`
     }
+    */
+    url += `account=${address}&`
     if (market) {
       url += `market=${market}&`
     }
@@ -402,6 +439,7 @@ export class RestClient implements REST {
 
   public async getWalletBalance(params?: types.AddressOnlyGetterParams) {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -410,6 +448,8 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_balance?account=${address}`)
   }
 
@@ -454,7 +494,7 @@ export class RestClient implements REST {
 
     let url = '/get_trades?'
 
-
+    /*
     if (!address) {
       if (this.wallet) {
         url += `account=${this.wallet.pubKeyBech32}&`
@@ -462,6 +502,8 @@ export class RestClient implements REST {
     } else {
       url += `account=${address}&`
     }
+    */
+    url += `account=${address}&`
     if (market) {
       url += `market=${market}&`
     }
@@ -632,6 +674,7 @@ export class RestClient implements REST {
     return this.fetchCosmosJson(`/blocks/${params.blockheight}`)
   }
 
+  /*
   public async getGasFees() {
     const response = await this.fetchJson(`/get_txns_fees`)
     const fees: GasFees = {}
@@ -643,6 +686,7 @@ export class RestClient implements REST {
 
     return fees
   }
+  */
 
   public async getAMMRewardPercentage(): Promise<null | types.GetAMMRewardPercentageResponse> {
     return this.fetchJson('/get_amm_reward_percentage')
@@ -650,6 +694,7 @@ export class RestClient implements REST {
 
   public async getTransfers(params?: types.AddressOnlyGetterParams) {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -658,6 +703,8 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_external_transfers?account=${address}`)
   }
 
@@ -667,6 +714,7 @@ export class RestClient implements REST {
 
   public async getVaults(params?: types.AddressOnlyGetterParams) {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -675,6 +723,8 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchJson(`/get_vaults?address=${address}`)
   }
 
@@ -697,6 +747,7 @@ export class RestClient implements REST {
 
   public async getValidatorDelegations(params: types.AddressOnlyGetterParams): Promise<any> {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -705,11 +756,14 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchCosmosJson(`/staking/validators/${address}/delegations`)
   }
 
   public async getDelegatorDelegations(params: types.AddressOnlyGetterParams): Promise<any> {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -718,11 +772,14 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchCosmosJson(`/staking/delegators/${address}/delegations`)
   }
 
   public async getDelegatorUnbondingDelegations(params?: types.AddressOnlyGetterParams): Promise<any> {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -730,12 +787,14 @@ export class RestClient implements REST {
       address = this.wallet.pubKeyBech32
     } else {
       address = params.address
-    }
+    }*/
+    address = params.address
     return this.fetchCosmosJson(`/staking/delegators/${address}/unbonding_delegations`)
   }
 
   public async getDelegatorRedelegations(params?: types.AddressOnlyGetterParams): Promise<any> {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -743,7 +802,8 @@ export class RestClient implements REST {
       address = this.wallet.pubKeyBech32
     } else {
       address = params.address
-    }
+    }*/
+    address = params.address
     return this.fetchCosmosJson(`/staking/redelegations?delegator=${address}`)
   }
 
@@ -764,6 +824,7 @@ export class RestClient implements REST {
 
   public async getDelegatorDelegationRewards(params?: types.AddressOnlyGetterParams): Promise<any> {
     let address = ''
+    /*
     if (!params) {
       if (!this.wallet) {
         throw new Error('get_account: missing address param')
@@ -772,6 +833,8 @@ export class RestClient implements REST {
     } else {
       address = params.address
     }
+    */
+    address = params.address
     return this.fetchCosmosJson(`/distribution/delegators/${address}/rewards`)
   }
 
@@ -905,6 +968,8 @@ export class RestClient implements REST {
   //
   // PRIVATE METHODS
   //
+
+  /*
   public async createOrder(msg: types.CreateOrderMsg, options?: types.Options) {
     return this.createOrders([msg], options)
   }
@@ -1493,4 +1558,5 @@ export class RestClient implements REST {
     }
     return this.wallet.signAndBroadcast([msg], [types.SET_MESSAGE_FEE_TYPE], options)
   }
+  */
 }
