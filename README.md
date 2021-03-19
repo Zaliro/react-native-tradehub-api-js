@@ -1,4 +1,4 @@
-# Tradehub API JS SDK
+# React Native Tradehub API JS SDK
 
 *Designed for simplicity*
 
