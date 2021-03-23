@@ -167,9 +167,15 @@ export interface GetTransactionsGetterParams {
 export interface TokenOnlyGetterParams {
   token: string
 }
+
 export interface PageOnlyGetterParams {
   page: number
 }
+export interface LimitOnlyGetterParams {
+  limit: number
+}
+export interface PageWithLimitGetterParams extends PageOnlyGetterParams, LimitOnlyGetterParams { }
+
 export interface MarketOnlyGetterParams {
   market: string
 }

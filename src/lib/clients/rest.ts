@@ -662,12 +662,17 @@ export class RestClient implements REST {
     return this.fetchJson(`/get_block_time`)
   }
 
-  public async getBlocks(params?: types.PageOnlyGetterParams) {
-    let url = '/get_blocks'
-    if (params) {
-      url = url + `?page=${params.page}`
+  public async getBlocks(params?: types.PageWithLimitGetterParams) {
+    const paramsArr = Object.keys(params) ?? []
+
+    let paramsStr = ''
+    if (paramsArr.length > 0) {
+      paramsStr = '?'
     }
-    return this.fetchJson(url)
+    for (let item = 0; item < paramsArr.length; item++) {
+      paramsStr = `${paramsStr}&${paramsArr[item]}=${params[paramsArr[item]] || ''}`
+    }
+    return this.fetchJson(`/get_blocks${paramsStr}`)
   }
 
   public async getCosmosBlockInfo(params: types.blockHeightGetter) : Promise<any> {
