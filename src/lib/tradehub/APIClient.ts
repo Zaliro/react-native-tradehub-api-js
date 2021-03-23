@@ -5,6 +5,7 @@ import {
   GetAccountResponse,
   GetInsuranceBalancesResponse,
   GetStakingPoolResponse,
+  ListBlocksOpts,
   ListBlocksResponse,
   ListDelegatorDelegationsOpts,
   ListDelegatorDelegationsResponse,
@@ -60,8 +61,9 @@ class APIClient {
     return response.data as ListValidatorDelegationsResponse;
   }
 
-  async getBlocks(): Promise<ListBlocksResponse> {
-    const request = this.apiManager.path("blocks/list");
+  async getBlocks(opts: ListBlocksOpts): Promise<ListBlocksResponse> {
+    const queryParams = { page: opts.page, limit: opts.limit };
+    const request = this.apiManager.path("blocks/list", queryParams);
     const response = await request.get();
     return response.data as ListBlocksResponse;
   }
